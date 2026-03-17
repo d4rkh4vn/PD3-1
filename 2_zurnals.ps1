@@ -1,19 +1,21 @@
 $documentsPath = [Environment]::GetFolderPath("MyDocuments")
-$outputFile = Join-Path $documentsPath "Errors.txt"
+$outputFile = "$documentsPath\Errors.txt"
 $sevenDaysAgo = (Get-Date).AddDays(-7)
 $errors = Get-EventLog -LogName System -EntryType Error -After $sevenDaysAgo
 $errorCount = $errors.Count
-if ($errorcount -gt 10) {
-$header = "[KRITISKI] Sistēma ir nestabila!"
+"" | Out-File -FilePath $outputFile -Encoding UTF8
+if ($errorCount -gt 10) {
+    "[KRITISKI] Sistema ir nestabila!" | Out-File -FilePath $outputFile -Append -Encoding UTF8
 } else {
-$header = "[OK] Kļūdu līmenis normāls."
+    "[OK] Kludu limenis normalss." | Out-File -FilePath $outputFile -Append -Encoding UTF8
 }
-$header | Out-File -FilePath $outputFile -Encoding UTF8
 "" | Out-File -FilePath $outputFile -Append -Encoding UTF8
 if ($errorCount -gt 0) {
-foreach ($err in $errors) {
-$line = "$($err.TimeGenerated): $($err.Message)"
-$line = | Out-File -FilePath $outputFile -Append -Encoding UTF8
+    foreach ($e in $errors) {
+        $time = $e.TimeGenerated
+        $msg = $e.Message
+        "$time : $msg" | Out-File -FilePath $outputFile -Append -Encoding UTF8
+    }
 } else {
-"Nav kļūdu." | Out-File -FilePath $outputFile -Append -Encoding UTF8
+    "Nav kludu." | Out-File -FilePath $outputFile -Append -Encoding UTF8
 }
