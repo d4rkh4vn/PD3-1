@@ -1,4 +1,17 @@
-$jsonOutput = winget upgrade --output json --accept-source-agreements 2>$null
-$updates = $jsonOutput | ConvertFrom-Json
-$updateCount = $updates.Count
-Write-Host "Sistema ir $updateCount programmas, kuras nepieciesams atjauninat."
+$output = winget upgrade
+$separatorIndex = -1
+for ($i = 0; $i -lt $output.Count; $i++) {
+    if ($output[$i] -match "^-{3,}") {
+        $separatorIndex = $i
+        break
+    }
+}
+$count = 0
+if ($separatorIndex -gt -1) {
+    for ($i = $separatorIndex + 1; $i -lt $output.Count; $i++) {
+        if ($output[$i].Trim() -ne "") {
+            $count++
+        }
+    }
+}
+Write-Host "Sistema ir $count programmas, kuras nepieciesams atjauninat."
